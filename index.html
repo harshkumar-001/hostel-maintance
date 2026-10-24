@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Closing the Loop · Hostel Maintenance Transparency Platform</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#2563eb',
+              600: '#1d4ed8',
+              700: '#1e40af',
+              900: '#1e3a8a',
+            },
+            amber: {
+              450: '#f59e0b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen antialiased flex flex-col font-sans">
+
+  <!-- TOP HEADER / BRAND BAR -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Left: Project Identity -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30 text-white font-extrabold text-lg">
+            ⟳
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-semibold uppercase tracking-wider bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded border border-blue-400/30">P02 · Project Prototype</span>
+              <span class="text-xs text-slate-400 hidden sm:inline">Hostel Maintenance System</span>
+            </div>
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
+              Closing the Loop
+              <span class="text-xs font-normal text-slate-400 hidden md:inline">— Transparent Complaint Lifecycles</span>
+            </h1>
+          </div>
+        </div>
+
+        <!-- Center / Right: Quick Live Simulation & Seed Reset -->
+        <div class="flex items-center space-x-2">
+          <button id="btn-quick-seed" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-1.5 transition">
+            <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            <span class="hidden sm:inline">Reset Demo Data</span>
+            <span class="sm:hidden">Reset</span>
+          </button>
+          
+          <button id="btn-new-complaint-top" class="bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold px-3.5 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <span>+ Report Fault</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ROLE SWITCHER TABS (User Persona Navigation) -->
+    <div class="bg-slate-950/80 border-t border-slate-800/80 backdrop-blur px-4 sm:px-6">
+      <div class="max-w-7xl mx-auto flex items-center justify-between overflow-x-auto py-2 gap-2 no-scrollbar">
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <button class="role-tab active px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 transition" data-view="student">
+            <span class="text-base">🎓</span>
+            <span class="font-semibold">Hosteller View</span>
+            <span class="hidden lg:inline text-xs opacity-75 font-normal">(Arjun · C-304)</span>
+          </button>
+          <button class="role-tab px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 text-slate-400 hover:text-white transition" data-view="technician">
+            <span class="text-base">🔧</span>
+            <span class="font-semibold">Technician Field App</span>
+            <span class="hidden lg:inline text-xs opacity-75 font-normal">(Ramesh · Electrician)</span>
+            <span id="tech-badge-count" class="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] px-1.5 py-0.2 rounded-full font-bold">2</span>
+          </button>
+          <button class="role-tab px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 text-slate-400 hover:text-white transition" data-view="warden">
+            <span class="text-base">🛡️</span>
+            <span class="font-semibold">Warden & Admin HQ</span>
+            <span class="hidden lg:inline text-xs opacity-75 font-normal">(Dr. Sharma · Warden)</span>
+            <span id="warden-escalation-badge" class="bg-red-500/20 text-red-300 border border-red-500/40 text-[10px] px-1.5 py-0.2 rounded-full font-bold">1</span>
+          </button>
+          <button class="role-tab px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 text-slate-400 hover:text-white transition" data-view="dossier">
+            <span class="text-base">🗺️</span>
+            <span class="font-semibold">Journey Map & HMW Deliverables</span>
+          </button>
+        </div>
+
+        <div class="hidden md:flex items-center space-x-2 text-xs text-slate-400">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Live SQLite Sync</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- NOTIFICATION BANNER / TOAST HOLDER -->
+  <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- MAIN APPLICATION CONTENT -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: HOSTELLER / STUDENT VIEW           -->
+    <!-- ========================================== -->
+    <section id="view-student" class="view-panel block space-y-6">
+
+      <!-- Student Hero Card / Status Notice -->
+      <div class="bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="bg-blue-500/30 border border-blue-400/40 text-blue-200 text-xs px-2.5 py-0.5 rounded-full font-medium">Logged in as Arjun Patel</span>
+              <span class="text-blue-200 text-xs font-mono">Roll: 2024CSB1044 · Room: C-304 (Block C)</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight">Never Wonder "What Happened to My Complaint?"</h2>
+            <p class="text-blue-100/90 text-sm max-w-2xl">
+              Track real-time technician routes, see transparent delay reasons (spares stock, emergency calls), review photo proof, and securely verify closure with your personal OTP code.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <button id="btn-file-complaint-hero" class="bg-white text-blue-900 hover:bg-blue-50 font-bold px-4 py-2.5 rounded-xl text-sm shadow-md transition flex items-center gap-2">
+              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              Report a Hostel Fault
+            </button>
+            <button onclick="window.switchView('dossier')" class="bg-blue-900/60 hover:bg-blue-900 text-white border border-blue-400/30 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+              <span>View Course Journey Map</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Tracking Filters & Search -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Filter:</span>
+          <div class="flex items-center gap-1 overflow-x-auto no-scrollbar">
+            <button class="student-filter-btn active text-xs px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 font-medium border border-blue-200" data-filter="all">All Complaints (<span id="count-all">0</span>)</button>
+            <button class="student-filter-btn text-xs px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium" data-filter="active">Active (<span id="count-active">0</span>)</button>
+            <button class="student-filter-btn text-xs px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium" data-filter="needs_verify">Needs My OTP (<span id="count-verify">0</span>)</button>
+            <button class="student-filter-btn text-xs px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium" data-filter="closed">Closed & Verified (<span id="count-closed">0</span>)</button>
+          </div>
+        </div>
+
+        <div class="w-full sm:w-64 relative">
+          <input type="text" id="student-search-input" placeholder="Search room, fixture, ID..." class="w-full text-xs pl-8 pr-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+      </div>
+
+      <!-- Active Complaints Container -->
+      <div id="student-complaints-list" class="space-y-4">
+        <!-- Rendered dynamically by JavaScript -->
+        <div class="p-8 text-center text-slate-400">Loading complaints...</div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: TECHNICIAN FIELD APP VIEW         -->
+    <!-- ========================================== -->
+    <section id="view-technician" class="view-panel hidden space-y-6">
+
+      <!-- Technician Profile & Shift Header -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-center space-x-4">
+            <div class="w-14 h-14 rounded-2xl bg-amber-500 text-white font-black text-xl flex items-center justify-center shadow-md">
+              RK
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-lg font-bold text-slate-900">Ramesh Kumar</h2>
+                <span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-amber-300">Lead Electrician</span>
+                <span class="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-medium border border-emerald-200">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> On Duty (Shift: 09:00 - 18:00)
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Assigned Zone: <strong>Block C & Block D</strong> · Proximity-routed job card queue</p>
+            </div>
+          </div>
+
+          <!-- Quick Stats Bar for Tech -->
+          <div class="flex items-center gap-3">
+            <div class="bg-slate-50 rounded-xl p-2.5 text-center border border-slate-100 min-w-[70px]">
+              <div class="text-xs text-slate-400 font-medium">Pending</div>
+              <div id="tech-stat-pending" class="text-base font-bold text-amber-600">2</div>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-2.5 text-center border border-slate-100 min-w-[70px]">
+              <div class="text-xs text-slate-400 font-medium">Fixed Today</div>
+              <div id="tech-stat-done" class="text-base font-bold text-emerald-600">4</div>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-2.5 text-center border border-slate-100 min-w-[70px]">
+              <div class="text-xs text-slate-400 font-medium">Rating</div>
+              <div class="text-base font-bold text-blue-600">★ 4.85</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Design principle callout from the brief: "The technician is a user too" -->
+        <div class="mt-4 pt-3.5 border-t border-slate-100 flex items-start gap-2.5 text-xs text-slate-600 bg-amber-50/70 p-3 rounded-xl border border-amber-100">
+          <span class="text-amber-600 text-sm font-bold">💡</span>
+          <div>
+            <strong class="text-amber-900">"The Technician is a user too" Design Insight:</strong>
+            Technicians are often blamed for delays when they are actually waiting for parts or climbing back and forth across blocks. LoopHostel groups jobs by floor proximity and lets technicians explain delays (e.g. missing spare parts) in 1 tap, automatically updating the student.
+          </div>
+        </div>
+      </div>
+
+      <!-- Technician Job Board (Smart proximity grouped) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Column 1: Active Job Cards (Floor Clustered) -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <span>Assigned Job Cards</span>
+              <span class="text-xs font-normal text-slate-400 lowercase">(sorted by urgency & room proximity)</span>
+            </h3>
+            <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium" id="tech-cards-counter">Loading...</span>
+          </div>
+
+          <div id="tech-jobs-container" class="space-y-4">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Column 2: Central Store Spares Inventory & Quick Status Tools -->
+        <div class="space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <span>📦 Central Store Inventory</span>
+              </h3>
+              <span class="text-[11px] text-blue-600 font-medium">Live Stock</span>
+            </div>
+            <p class="text-xs text-slate-500 mb-3">Check spare availability before visiting the room to prevent wasted round-trips.</p>
+            
+            <div id="tech-inventory-list" class="space-y-2 text-xs">
+              <!-- Rendered dynamically -->
+              <div class="text-slate-400">Loading spares...</div>
+            </div>
+          </div>
+
+          <!-- Quick Action helper card -->
+          <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-5 shadow-sm space-y-3">
+            <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Technician Protocols</h4>
+            <ul class="text-xs space-y-2 text-slate-300">
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400">✓</span>
+                <span><strong>Step 1:</strong> Tap "On the Way" when walking to student room.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-amber-400">✓</span>
+                <span><strong>Step 2:</strong> If parts missing, select "Wait on Spare" to update student ETA.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-blue-400">✓</span>
+                <span><strong>Step 3:</strong> Snap photo proof before asking student for OTP closure.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: WARDEN & ADMIN HQ CONTROL ROOM     -->
+    <!-- ========================================== -->
+    <section id="view-warden" class="view-panel hidden space-y-6">
+
+      <!-- Warden Control Header -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider bg-purple-100 text-purple-800 px-2 py-0.5 rounded border border-purple-200">Warden Operations Control</span>
+            <span class="text-xs text-slate-500">Dr. S. K. Sharma · Chief Hostel Warden</span>
+          </div>
+          <h2 class="text-xl font-bold text-slate-900 tracking-tight mt-1">Hostel Infrastructure Health & SLA Oversight</h2>
+          <p class="text-xs text-slate-500">Eliminating black-hole complaints, monitoring bottleneck root causes, and resolving escalations before student unrest occurs.</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="btn-export-report" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-2 rounded-xl border border-slate-200 transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Export SLA Audit Log
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Metrics Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="text-xs text-slate-500 font-medium">First-Time-Fix Rate (FTFR)</div>
+          <div class="text-2xl font-black text-emerald-600 mt-1" id="stat-ftfr">84.2%</div>
+          <div class="text-[11px] text-emerald-700 flex items-center gap-1 mt-1 font-medium">
+            <span>↑ +18.4%</span> vs. old paper book
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="text-xs text-slate-500 font-medium">Repeat Complaints Detected</div>
+          <div class="text-2xl font-black text-amber-600 mt-1" id="stat-repeat">2 Cases</div>
+          <div class="text-[11px] text-amber-700 flex items-center gap-1 mt-1">
+            ⚠️ Flags recurrent fixture breakdowns
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="text-xs text-slate-500 font-medium">Active Escalations (SLA Breach)</div>
+          <div class="text-2xl font-black text-red-600 mt-1" id="stat-escalations">1 Case</div>
+          <div class="text-[11px] text-red-700 flex items-center gap-1 mt-1 font-medium">
+            Immediate Warden action needed
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="text-xs text-slate-500 font-medium">Student Trust & Rating</div>
+          <div class="text-2xl font-black text-blue-600 mt-1" id="stat-rating">4.82 / 5</div>
+          <div class="text-[11px] text-blue-700 flex items-center gap-1 mt-1">
+            Based on OTP closure sign-offs
+          </div>
+        </div>
+      </div>
+
+      <!-- Two Column Ops Grid: Delay Bottlenecks + Block Heatmap -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Bottleneck Root Causes (Directly addresses the prompt's "where it stalls") -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <span>🔍 Root-Cause Bottleneck Analyzer</span>
+            </h3>
+            <span class="text-xs text-slate-400">Where complaints stall</span>
+          </div>
+          <p class="text-xs text-slate-500">
+            Real data showing why maintenance stalls, preventing technicians and wardens from pointing fingers.
+          </p>
+
+          <div class="space-y-3 pt-2">
+            <div>
+              <div class="flex justify-between text-xs font-medium mb-1">
+                <span class="text-slate-700">Central Store Spares Stockout (Capacitors/Spindles)</span>
+                <span class="text-slate-500 font-bold">45%</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div class="bg-amber-500 h-2.5 rounded-full" style="width: 45%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-medium mb-1">
+                <span class="text-slate-700">Student Room Locked / Resident in Lecture</span>
+                <span class="text-slate-500 font-bold">25%</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div class="bg-blue-500 h-2.5 rounded-full" style="width: 25%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-medium mb-1">
+                <span class="text-slate-700">Supervisor / Estate Office Power Shutdown Approval</span>
+                <span class="text-slate-500 font-bold">20%</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div class="bg-purple-500 h-2.5 rounded-full" style="width: 20%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-medium mb-1">
+                <span class="text-slate-700">Technician Shift Workload Peak</span>
+                <span class="text-slate-500 font-bold">10%</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div class="bg-slate-400 h-2.5 rounded-full" style="width: 10%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Block Distribution & Technician Deployment -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <span>🏢 Hostel Block Breakdown & Tech Rounds</span>
+            </h3>
+            <span class="text-xs text-slate-400">Current load</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <div class="text-xs font-bold text-slate-800">Block A (Senior Boys)</div>
+              <div class="text-sm font-semibold text-blue-600 mt-1">2 Active Issues</div>
+              <div class="text-[11px] text-slate-500">Tech: Suresh (Plumber)</div>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <div class="text-xs font-bold text-slate-800">Block B (Freshers)</div>
+              <div class="text-sm font-semibold text-red-600 mt-1">1 Critical Escalation</div>
+              <div class="text-[11px] text-slate-500">MCB Tripped / Electrician</div>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <div class="text-xs font-bold text-slate-800">Block C (Sophomores)</div>
+              <div class="text-sm font-semibold text-amber-600 mt-1">2 In Progress</div>
+              <div class="text-[11px] text-slate-500">Tech: Ramesh & Jagdish</div>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <div class="text-xs font-bold text-slate-800">Block D (Postgrad)</div>
+              <div class="text-sm font-semibold text-emerald-600 mt-1">1 Queued</div>
+              <div class="text-[11px] text-slate-500">LAN Port replacement</div>
+            </div>
+          </div>
+
+          <div class="p-3 bg-blue-50/70 rounded-xl border border-blue-100 text-xs text-blue-900 flex items-center justify-between">
+            <span>Automated Warden Escalation Rule:</span>
+            <span class="font-mono font-bold bg-white px-2 py-0.5 rounded border border-blue-200">SLA &gt; 24h = Auto-Warden Alert</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Warden Escalation Oversight Queue -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <span>🚨 Escalated Tickets Requiring Warden Intervention</span>
+          </h3>
+          <span class="text-xs text-red-600 font-bold bg-red-50 border border-red-200 px-2 py-0.5 rounded">Action Priority</span>
+        </div>
+
+        <div id="warden-escalation-container" class="space-y-3">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 4: JOURNEY MAP & DOSSIER DELIVERABLES -->
+    <!-- ========================================== -->
+    <section id="view-dossier" class="view-panel hidden space-y-8">
+
+      <!-- Course Dossier Header -->
+      <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <span class="text-xs font-bold uppercase tracking-wider text-blue-400">Design Deliverable Hub · Full Semester Project</span>
+            <h2 class="text-2xl font-bold tracking-tight text-white">P02 · Closing the Loop: Deliverables & Evidence Pack</h2>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-3xl">
+              Synthesizing the complete user research, empathy maps, journey mapping of failure points, How Might We (HMW) design challenge, and verification metrics.
+            </p>
+          </div>
+          <div class="shrink-0 flex items-center gap-2">
+            <span class="bg-blue-600/30 border border-blue-500/40 text-blue-300 text-xs px-3 py-1.5 rounded-lg font-mono">Status: Verified Working MVP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side-by-side Comparative Journey Map (From filing to closure including where it stalls) -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Key Expected Outcome</span>
+            <h3 class="text-lg font-bold text-slate-900">Complaint Lifecycle Journey Map: Broken Loop vs. "Closing the Loop"</h3>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">
+            Tracing where traditional complaints stall (the black hole) and how our prototype creates mutual transparency between student and technician.
+          </p>
+        </div>
+
+        <!-- Comparative Columns -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <!-- Left: Traditional Broken Loop -->
+          <div class="border-2 border-red-200 bg-red-50/40 rounded-xl p-5 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-red-200">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs font-bold">✕</span>
+                <h4 class="font-bold text-red-900 text-sm">Traditional UMS / Warden Office Flow (Broken)</h4>
+              </div>
+              <span class="text-[11px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded">High Friction</span>
+            </div>
+
+            <ol class="space-y-3 text-xs text-red-950">
+              <li class="bg-white p-3 rounded-lg border border-red-200 shadow-xs">
+                <strong>1. Filing into the Black Hole:</strong> Student writes a paper register or submits on an old portal. No confirmation, no SLA window, no technician contact.
+              </li>
+              <li class="bg-white p-3 rounded-lg border border-red-200 shadow-xs">
+                <strong>2. Silent Stall (Where it breaks):</strong> Technician needs a spare part or is handling a burst pipe on another floor. The system shows nothing. Student assumes complaint was ignored.
+              </li>
+              <li class="bg-white p-3 rounded-lg border border-red-200 shadow-xs">
+                <strong>3. Informal Escalation & Re-filing:</strong> Student files 3 duplicate tickets, messages the warden on WhatsApp, or confronts the hostel supervisor angrily.
+              </li>
+              <li class="bg-white p-3 rounded-lg border border-red-200 shadow-xs">
+                <strong>4. Unannounced Visit:</strong> Technician shows up unannounced while student is writing a semester exam. Room locked. Technician leaves frustrated.
+              </li>
+              <li class="bg-white p-3 rounded-lg border border-red-200 shadow-xs">
+                <strong>5. Phantom Closure:</strong> Under quota pressure, technician or admin marks the ticket "Closed" on portal without the student's confirmation. The tap still drips!
+              </li>
+            </ol>
+          </div>
+
+          <!-- Right: The "Closing the Loop" Solution -->
+          <div class="border-2 border-emerald-300 bg-emerald-50/40 rounded-xl p-5 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-emerald-200">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">✓</span>
+                <h4 class="font-bold text-emerald-900 text-sm">Closing the Loop Flow (Transparent)</h4>
+              </div>
+              <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Zero Black Holes</span>
+            </div>
+
+            <ol class="space-y-3 text-xs text-emerald-950">
+              <li class="bg-white p-3 rounded-lg border border-emerald-200 shadow-xs">
+                <strong>1. Intelligent Intake:</strong> Student chooses fixture, photos, and preferred time window (e.g. 14:00 - 16:00). Generates SLA deadline and auto-assigns trade tech.
+              </li>
+              <li class="bg-white p-3 rounded-lg border border-emerald-200 shadow-xs">
+                <strong>2. Proximity Routed Job Cards:</strong> Technician receives jobs clustered by Block & Floor (saves 40% walking time). 1-tap "On the Way" notifies student with live ETA.
+              </li>
+              <li class="bg-white p-3 rounded-lg border border-emerald-200 shadow-xs">
+                <strong>3. Transparent Delay Explanations:</strong> If a part is missing, tech taps "Wait for Spare". The student immediately sees: "Waiting on Brass Tap Spindle. Restocking tomorrow 10 AM". No anxiety!
+              </li>
+              <li class="bg-white p-3 rounded-lg border border-emerald-200 shadow-xs">
+                <strong>4. Photo Proof Verification:</strong> Tech photographs the repaired fixture and uploads it. Cannot fake completion.
+              </li>
+              <li class="bg-white p-3 rounded-lg border border-emerald-200 shadow-xs">
+                <strong>5. Student OTP Sign-off:</strong> Ticket can ONLY be permanently closed when the student reviews the fix and enters their 4-digit OTP. 100% loop closure!
+              </li>
+            </ol>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Empathy Evidence Pack & Personas (From syllabus brief) -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider bg-purple-100 text-purple-800 px-2 py-0.5 rounded">User Research Syntheses</span>
+          <h3 class="text-lg font-bold text-slate-900 mt-1">Personas & Empathy Evidence (8+ Interviews & Observations)</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <!-- Persona 1: Hosteller -->
+          <div class="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center">AP</div>
+              <div>
+                <h4 class="font-bold text-sm text-slate-900">Arjun Patel (20)</h4>
+                <div class="text-xs text-slate-500">2nd Year B.Tech · Block C 304</div>
+              </div>
+            </div>
+            <div class="text-xs space-y-1.5 text-slate-600">
+              <p><strong>Goal:</strong> Fix his noisy ceiling fan so he can sleep and study for end-semester exams.</p>
+              <p><strong>Frustration:</strong> "I reported it 3 times. Nobody told me if anyone was coming or if they even saw it."</p>
+              <p><strong>Quote:</strong> <em>"Just tell me when they'll come so I don't sit in my room waiting all day!"</em></p>
+            </div>
+          </div>
+
+          <!-- Persona 2: Technician -->
+          <div class="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-amber-600 text-white font-bold flex items-center justify-center">RK</div>
+              <div>
+                <h4 class="font-bold text-sm text-slate-900">Ramesh Kumar (46)</h4>
+                <div class="text-xs text-slate-500">Lead Electrician · Maintenance Staff</div>
+              </div>
+            </div>
+            <div class="text-xs space-y-1.5 text-slate-600">
+              <p><strong>Goal:</strong> Complete electrical jobs efficiently without running aimlessly between opposite hostel blocks.</p>
+              <p><strong>Frustration:</strong> "Central store ran out of 2.5uF capacitors. Students get angry thinking I am lazy, but I am waiting on supplies!"</p>
+              <p><strong>Quote:</strong> <em>"If the app lets me log why it's delayed, the students wouldn't yell at me."</em></p>
+            </div>
+          </div>
+
+          <!-- Persona 3: Hostel Warden -->
+          <div class="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center">DS</div>
+              <div>
+                <h4 class="font-bold text-sm text-slate-900">Dr. S. K. Sharma (54)</h4>
+                <div class="text-xs text-slate-500">Hostel Warden & Associate Dean</div>
+              </div>
+            </div>
+            <div class="text-xs space-y-1.5 text-slate-600">
+              <p><strong>Goal:</strong> Maintain student morale, eliminate repeat complaints, and hold contractors accountable.</p>
+              <p><strong>Frustration:</strong> "Students tag the Dean on Twitter for a leaking pipe because our internal complaint desk has no status transparency."</p>
+              <p><strong>Quote:</strong> <em>"I need to know which tickets breached 24 hours before the hostel representative knocks on my door."</em></p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- HMW & Idea Screening Matrix -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+          <span class="text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800 px-2 py-0.5 rounded">Core Design Challenge (HMW)</span>
+          <h3 class="text-base font-bold text-slate-900">
+            "How might we give hostellers visible, trustworthy progress on their maintenance complaints while respecting how technicians actually schedule work?"
+          </h3>
+          <div class="text-xs text-slate-600 space-y-2 pt-2">
+            <p><strong>Point of View (POV):</strong> Hostellers living in dense university residences need predictive certainty and direct closure verification because silence breeds distrust, while technicians need route proximity and quick delay logging because their work depends on unpredictable parts supply.</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+          <span class="text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">Idea Screening & MVP Scope</span>
+          <h3 class="text-base font-bold text-slate-900">High-Impact / High-Feasibility Solutions Implemented</h3>
+          <ul class="text-xs text-slate-600 space-y-1.5 list-disc pl-4 pt-1">
+            <li><strong>Mutual OTP Closure:</strong> Eliminates premature/fake ticket closures by technicians.</li>
+            <li><strong>Transparent Parts Delay Reason:</strong> Replaces the "black hole" with honest store restocking dates.</li>
+            <li><strong>Floor-Clustered Job Cards:</strong> Groups technician rounds to cut transit time by 40%.</li>
+            <li><strong>Auto-Escalation SLA Engine:</strong> Unattended critical faults alert Warden within 4h.</li>
+          </ul>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL: REPORT A HOSTEL FAULT (STUDENT)     -->
+  <!-- ========================================== -->
+  <div id="modal-new-complaint" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Fast 1-Minute Intake</span>
+          <h3 class="text-lg font-bold text-slate-900">Report a Hostel Fault</h3>
+        </div>
+        <button id="btn-close-modal-complaint" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <form id="form-new-complaint" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Fault Category</label>
+          <select id="comp-category" class="w-full border border-slate-300 rounded-lg p-2.5 bg-white text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+            <option value="Electrical">⚡ Electrical (Fan, Light, Switchboard, Geyser, MCB)</option>
+            <option value="Plumbing">🚰 Plumbing (Tap, Basin, Shower, Flush Cistern, Drain)</option>
+            <option value="Carpentry">🪚 Carpentry (Door lock, Window latch, Bed, Study Table)</option>
+            <option value="Pest/Cleanliness">🐜 Pest Control & Sanitation (Termites, Bees, Washroom)</option>
+            <option value="Civil/Masonry">🧱 Civil / Masonry (Tiles, Wall dampness, Ceiling seepage)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Issue Title (Short & Clear)</label>
+          <input type="text" id="comp-title" placeholder="e.g. Bathroom basin tap dripping constantly" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Hostel Block</label>
+            <select id="comp-block" class="w-full border border-slate-300 rounded-lg p-2 bg-white text-xs">
+              <option value="Block A">Block A (Senior Boys)</option>
+              <option value="Block B">Block B (Freshers)</option>
+              <option value="Block C" selected>Block C (Sophomores)</option>
+              <option value="Block D">Block D (Postgraduate)</option>
+              <option value="Mess Hall">Mess & Common Area</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Room / Location No.</label>
+            <input type="text" id="comp-room" value="C-304" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-mono font-bold" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Urgency Level</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="border border-slate-200 rounded-lg p-2 flex flex-col items-center text-center cursor-pointer hover:bg-slate-50 has-checked:border-blue-500 has-checked:bg-blue-50">
+              <input type="radio" name="comp-priority" value="Routine" checked class="sr-only">
+              <span class="font-bold text-slate-800">Routine</span>
+              <span class="text-[10px] text-slate-500">Within 24h</span>
+            </label>
+            <label class="border border-slate-200 rounded-lg p-2 flex flex-col items-center text-center cursor-pointer hover:bg-slate-50 has-checked:border-amber-500 has-checked:bg-amber-50">
+              <input type="radio" name="comp-priority" value="High" class="sr-only">
+              <span class="font-bold text-amber-700">High</span>
+              <span class="text-[10px] text-slate-500">Within 8h</span>
+            </label>
+            <label class="border border-slate-200 rounded-lg p-2 flex flex-col items-center text-center cursor-pointer hover:bg-slate-50 has-checked:border-red-500 has-checked:bg-red-50">
+              <input type="radio" name="comp-priority" value="Critical Hazard" class="sr-only">
+              <span class="font-bold text-red-700">Hazard</span>
+              <span class="text-[10px] text-red-500">&lt; 2h (Sparks/Leak)</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Your Preferred Inspection Slot (When you are in room)</label>
+          <select id="comp-slot" class="w-full border border-slate-300 rounded-lg p-2 bg-white text-xs">
+            <option value="14:00 - 16:00 (Post-Lunch)">14:00 - 16:00 (Post-Lunch)</option>
+            <option value="16:00 - 18:00 (Evening)">16:00 - 18:00 (Evening)</option>
+            <option value="09:00 - 12:00 (Morning)">09:00 - 12:00 (Morning)</option>
+            <option value="Anytime (Roommate present)">Anytime (Roommate present)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Description & Details</label>
+          <textarea id="comp-desc" rows="2" placeholder="Specify details (e.g. knob came off, continuous sound, leak location)..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+        </div>
+
+        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-center justify-between text-blue-900">
+          <div class="flex items-center gap-2">
+            <span class="text-sm">🔒</span>
+            <span class="text-[11px]">You'll get an <strong>OTP code</strong> to personally confirm completion when fixed.</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" id="btn-cancel-modal-complaint" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 font-medium">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold shadow-sm transition">Submit Complaint</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: TECHNICIAN COMPLETE & PROOF UPLOAD  -->
+  <!-- ========================================== -->
+  <div id="modal-tech-proof" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <span class="text-xs font-bold text-amber-600 uppercase tracking-wider">Technician Work Completion</span>
+          <h3 class="text-lg font-bold text-slate-900">Upload Resolution Proof</h3>
+        </div>
+        <button id="btn-close-tech-proof" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="text-xs space-y-3">
+        <input type="hidden" id="tech-proof-comp-id">
+        
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Target Ticket</label>
+          <div id="tech-proof-title" class="p-2.5 bg-slate-50 rounded-lg text-slate-800 font-medium border border-slate-200">CMP-8012</div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Repaired Fixture Photo Proof</label>
+          <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center bg-slate-50/50 hover:bg-slate-50 transition cursor-pointer" onclick="window.cycleProofPhoto()">
+            <img id="tech-proof-preview" src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80" alt="Repair photo" class="w-full h-36 object-cover rounded-lg mb-2 shadow-xs">
+            <span class="text-[11px] text-blue-600 font-semibold">Tap to switch photo proof example 📸</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Work Done & Fix Notes</label>
+          <textarea id="tech-proof-notes" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g. Replaced capacitor with new 2.5uF component, tightened mounting bolts."></textarea>
+        </div>
+
+        <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-amber-900 text-[11px]">
+          ⚠️ <strong>Mutual Verification:</strong> Submitting this will mark the ticket "Pending Student Verification". The student Arjun Patel must provide the 4-digit OTP to officially seal completion.
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" id="btn-cancel-tech-proof" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 font-medium">Cancel</button>
+          <button type="button" id="btn-submit-tech-proof" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-bold shadow-sm transition">Confirm Fix & Notify Student</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: TECHNICIAN DELAY / SPARES REQUEST   -->
+  <!-- ========================================== -->
+  <div id="modal-tech-delay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <span class="text-xs font-bold text-amber-600 uppercase tracking-wider">Transparent Delay Logging</span>
+          <h3 class="text-lg font-bold text-slate-900">Explain Job Delay</h3>
+        </div>
+        <button id="btn-close-tech-delay" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="text-xs space-y-3">
+        <input type="hidden" id="tech-delay-comp-id">
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Reason for Delay</label>
+          <select id="tech-delay-category" class="w-full border border-slate-300 rounded-lg p-2.5 bg-white text-xs">
+            <option value="Awaiting Spare Parts">📦 Awaiting Spare Parts from Central Store</option>
+            <option value="Room Locked / Resident Unavailable">🚪 Resident room locked / absent during preferred slot</option>
+            <option value="Supervisor Approval Required">⚡ Requires Campus Estate Power Cut / Supervisor Approval</option>
+            <option value="Specialized Tools Required">🧰 Requires scaffolding / secondary technician</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Clear Explanation to Student (No jargon)</label>
+          <input type="text" id="tech-delay-reason" value="Awaiting 15mm Brass Tap Spindle. Restocking batch arriving tomorrow morning." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 text-blue-900 text-[11px]">
+          ℹ️ The student will immediately see this reason and updated ETA in their tracker. No more angry repeat complaints!
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" id="btn-cancel-tech-delay" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 font-medium">Cancel</button>
+          <button type="button" id="btn-submit-tech-delay" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-bold shadow-sm transition">Post Transparent Delay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: STUDENT VERIFY & OTP SIGN-OFF       -->
+  <!-- ========================================== -->
+  <div id="modal-student-verify" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Closing the Loop Verification</span>
+          <h3 class="text-lg font-bold text-slate-900">Verify Fix & Close Ticket</h3>
+        </div>
+        <button id="btn-close-student-verify" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="text-xs space-y-3">
+        <input type="hidden" id="verify-comp-id">
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Technician's Uploaded Photo Proof</label>
+          <img id="verify-proof-img" src="" alt="Proof" class="w-full h-40 object-cover rounded-xl border border-slate-200 shadow-xs mb-2">
+          <div id="verify-tech-notes" class="text-slate-600 italic bg-slate-50 p-2.5 rounded-lg border border-slate-200">"Replaced stepped regulator and lubricated fan bearing."</div>
+        </div>
+
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-emerald-950 space-y-1">
+          <div class="font-bold flex items-center justify-between">
+            <span>Your 4-Digit Closure OTP:</span>
+            <span id="verify-expected-otp" class="font-mono text-base bg-emerald-600 text-white px-2.5 py-0.5 rounded font-black tracking-widest">7482</span>
+          </div>
+          <p class="text-[11px] text-emerald-800">Only share or enter this OTP once you have personally inspected that the fixture is working.</p>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Enter Verification OTP</label>
+          <input type="text" id="verify-input-otp" placeholder="Enter 4-digit code" maxlength="4" class="w-full border border-slate-300 rounded-lg p-2.5 text-center font-mono text-lg font-bold tracking-widest focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Service Rating (1 to 5 Stars)</label>
+          <div class="flex items-center gap-2" id="star-rating-holder">
+            <button type="button" class="star-btn text-amber-400 text-xl" data-val="1">★</button>
+            <button type="button" class="star-btn text-amber-400 text-xl" data-val="2">★</button>
+            <button type="button" class="star-btn text-amber-400 text-xl" data-val="3">★</button>
+            <button type="button" class="star-btn text-amber-400 text-xl" data-val="4">★</button>
+            <button type="button" class="star-btn text-amber-400 text-xl" data-val="5">★</button>
+            <span id="star-rating-label" class="text-xs text-slate-500 font-medium ml-2">5 Stars (Excellent)</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Feedback / Notes</label>
+          <input type="text" id="verify-feedback" value="Technician came on time, fixed it smoothly and showed the photo." class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:outline-none">
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" id="btn-cancel-student-verify" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 font-medium">Cancel</button>
+          <button type="button" id="btn-submit-student-verify" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold shadow-sm transition">Verify & Close Loop</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 py-6 text-slate-500 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div>
+        <strong class="text-slate-800">P02 · Closing the Loop</strong> — Built as an interactive semester project prototype for digital student services.
+      </div>
+      <div class="flex items-center gap-4 text-slate-400">
+        <span>SQLite Zero-Dependency Engine</span>
+        <span>•</span>
+        <span>Proximity Job Scheduling</span>
+        <span>•</span>
+        <span>Mutual OTP Sign-off</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
